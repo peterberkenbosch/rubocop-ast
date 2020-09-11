@@ -40,7 +40,8 @@ module RuboCop
               emit_subsequence(list)
             end
           end
-          emit_list(:union, begin_t, children, end_t)
+          type = children.all?(&:literal?) ? :set : :union
+          emit_list(type, begin_t, children, end_t)
         end
 
         def emit_subsequence(node_list)
