@@ -40,14 +40,8 @@ desc 'Test pattern against ruby code'
 task test_pattern: :generate do
   if (pattern = ARGV[1]) && (ruby = ARGV[2])
     require_relative '../lib/rubocop/ast'
-    require 'parser/current'
-    compiler = ::RuboCop::AST::NodePattern::Compiler::Debug.new
-    np = ::RuboCop::AST::NodePattern.new(pattern, compiler: compiler)
-    builder = ::RuboCop::AST::Builder.new
-    buffer = ::Parser::Source::Buffer.new('(ruby)', source: ruby)
-    ruby_ast = ::Parser::CurrentRuby.new(builder).parse(buffer)
-    np.as_lambda.call(ruby_ast, trace: compiler.trace)
-    puts ::RuboCop::AST::NodePattern::Compiler::Debug::Colorizer.new(compiler).colorize(np.ast)
+    colorizer = ::RuboCop::AST::NodePattern::Compiler::Debug::Colorizer.new(pattern)
+    puts colorizer.test(ruby).colorize
   else
     puts 'Usage:'
     puts "  rake test-pattern '(send nil? :example...)' 'example(42)'"
